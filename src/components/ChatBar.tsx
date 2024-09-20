@@ -11,7 +11,7 @@ const ChatBar = () => {
   const [expanded, setExpanded] = useState<boolean>(false);
   return (
     <div
-      className={`z-40 flex h-[95vh] flex-col items-start gap-8 pl-3 pt-5 text-sm transition-all ease-linear ${expanded ? "w-[200px] pr-4" : "w-[70px]"}`}
+      className={`z-40 flex h-[95vh] flex-col items-start gap-8 pl-3 pt-5 text-sm transition-all duration-200 ease-linear ${expanded ? "w-[200px] pr-4" : "w-[70px]"}`}
     >
       {links.map((item, index) => (
         <ChatBarButton

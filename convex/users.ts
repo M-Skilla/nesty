@@ -2,6 +2,36 @@ import { internalMutation, query, QueryCtx } from "./_generated/server";
 import { UserJSON } from "@clerk/backend";
 import { v, Validator } from "convex/values";
 
+export const get = query({
+  args: { externalId: v.string() },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("users")
+      .filter((q) => q.neq(q.field("externalId"), args.externalId))
+      .order("desc")
+      .collect();
+  },
+});
+
+export const search = query({
+  args: { username: v.string(), externalId: v.string() },
+  handler: async (ctx, args) => {
+    if (!args.username && args.username == "") {
+      return await ctx.db
+        .query("users")
+        .filter((q) => q.neq(q.field("externalId"), args.externalId))
+        .order("desc")
+        .collect();
+    }
+    return await ctx.db
+      .query("users")
+      .withSearchIndex("searchUsername", (q) =>
+        q.search("username", args.username),
+      )
+      .collect();
+  },
+});
+
 export const current = query({
   args: {},
   handler: async (ctx) => {

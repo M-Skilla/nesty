@@ -14,15 +14,16 @@ export default defineSchema({
     externalId: v.string(),
   })
     .index("byUsername", ["username"])
-    .index("byExternalId", ["externalId"]),
+    .index("byExternalId", ["externalId"])
+    .searchIndex("searchUsername", {
+      searchField: "username",
+      filterFields: ["firstName", "lastName"],
+    }),
   conversations: defineTable({
     name: v.string(),
     isGroupChat: v.boolean(),
+    userId: v.array(v.id("users")),
   }).index("by_name", ["name"]),
-  conversationParticipants: defineTable({
-    userId: v.string(),
-    conversationId: v.string(),
-  }),
   messages: defineTable({
     conversationId: v.id("conversations"),
     senderId: v.id("users"),
