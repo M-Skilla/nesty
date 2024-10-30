@@ -12,12 +12,13 @@ export default defineSchema({
     username: v.string(),
     imageUrl: v.string(),
     externalId: v.string(),
+    isOnline: v.optional(v.boolean()),
   })
     .index("byUsername", ["username"])
     .index("byExternalId", ["externalId"])
     .searchIndex("searchUsername", {
       searchField: "username",
-      filterFields: ["firstName", "lastName"],
+      filterFields: ["firstName", "lastName", "username"],
     }),
   conversations: defineTable({
     name: v.string(),
@@ -29,5 +30,6 @@ export default defineSchema({
     senderId: v.id("users"),
     content: v.string(),
     isRead: v.boolean(),
+    media: v.optional(v.id("_storage")),
   }),
 });

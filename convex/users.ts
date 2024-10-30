@@ -1,4 +1,9 @@
-import { internalMutation, query, QueryCtx } from "./_generated/server";
+import {
+  internalMutation,
+  mutation,
+  query,
+  QueryCtx,
+} from "./_generated/server";
 import { UserJSON } from "@clerk/backend";
 import { v, Validator } from "convex/values";
 
@@ -16,7 +21,7 @@ export const get = query({
 export const search = query({
   args: { username: v.string(), externalId: v.string() },
   handler: async (ctx, args) => {
-    if (!args.username && args.username == "") {
+    if (!args.username || args.username === "") {
       return await ctx.db
         .query("users")
         .filter((q) => q.neq(q.field("externalId"), args.externalId))
@@ -95,3 +100,28 @@ async function userByExternalId(ctx: QueryCtx, externalId: string) {
     .withIndex("byExternalId", (q) => q.eq("externalId", externalId))
     .unique();
 }
+
+export const getUserConversation = query({
+  args: { conversationId: v.id("conversations"), userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const { conversationId, userId } = args;
+    const conversation = await ctx.db
+      .query("conversations")
+      .filter((q) => q.eq(q.field("_id"), conversationId))
+      .unique();
+    const receiver = conversation?.userId.filter((itm) => itm !== userId).at(0);
+    return await ctx.db
+      .query("users")
+      .filter((q) => q.eq(q.field("_id"), receiver))
+      .unique();
+  },
+});
+
+export const updateOnlineStatus = mutation({
+  args: { userId: v.id("users"), isOnline: v.boolean() },
+  handler: async (ctx, args) => {
+    const { userId, isOnline } = args;
+
+    await ctx.db.patch(userId, { isOnline });
+  },
+});

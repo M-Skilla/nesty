@@ -52,6 +52,7 @@ const ConversationsBar = () => {
               isActive={
                 searchParams.get("chat") === conversations.conversation[index]
               }
+              conversationId={conversations.conversation[index]}
               data={item}
               key={index}
             />
